@@ -173,6 +173,8 @@
 			clock-names = "iface", "core";
 			#address-cells = <1>;
 			#size-cells = <0>;
+			dmas = <&blsp_dma 9>, <&blsp_dma 8>;
+			dma-names = "rx", "tx";
 			status = "disabled";
 		};
 
