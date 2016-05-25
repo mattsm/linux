@@ -581,6 +581,38 @@ static unsigned int spi_qup_sgl_get_size(struct scatterlist *sgl, unsigned int n
 	return length;
 }
 
+/**
+ * spi_qup_sg_nents_for_len - return total count of entries in scatterlist
+ *			      needed to satisfy the supplied length
+ * @sg:		The scatterlist
+ * @len:	The total required length
+ *
+ * Description:
+ * Determines the number of entries in sg that sum upto a maximum of
+ * the supplied length, taking into acount chaining as well
+ *
+ * Returns:
+ *   the number of sg entries needed, negative error on failure
+ *
+ **/
+int spi_qup_sg_nents_for_len(struct scatterlist *sg, u64 len)
+{
+	int nents;
+	u64 total;
+
+	if (!len)
+		return 0;
+
+	for (nents = 0, total = 0; sg; sg = sg_next(sg)) {
+		nents++;
+		total += sg_dma_len(sg);
+		if (total > len)
+			return (nents - 1);
+	}
+
+	return -EINVAL;
+}
+
 static int spi_qup_do_dma(struct spi_device *spi, struct spi_transfer *xfer,
 unsigned long timeout)
 {
@@ -597,7 +629,8 @@ unsigned long timeout)
 		int rx_nents = 0, tx_nents = 0;
 
 		if (rx_sgl) {
-			rx_nents = sg_nents_for_len(rx_sgl, SPI_MAX_XFER);
+			rx_nents = spi_qup_sg_nents_for_len(rx_sgl,
+								SPI_MAX_XFER);
 			if (rx_nents < 0)
 				rx_nents = sg_nents(rx_sgl);
 
@@ -606,7 +639,8 @@ unsigned long timeout)
 		}
 
 		if (tx_sgl) {
-			tx_nents = sg_nents_for_len(tx_sgl, SPI_MAX_XFER);
+			tx_nents = spi_qup_sg_nents_for_len(tx_sgl,
+								SPI_MAX_XFER);
 			if (tx_nents < 0)
 				tx_nents = sg_nents(tx_sgl);
 
