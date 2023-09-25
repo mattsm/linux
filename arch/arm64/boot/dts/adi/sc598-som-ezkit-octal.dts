@@ -1,0 +1,46 @@
+/*
+ * Copyright (c) 2021 Analog Devices Incorporated
+ * Author: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
+ */
+
+/dts-v1/;
+
+#include "sc598-som-ezkit.dts"
+
+&uart0 {
+	status = "disabled";
+};
+
+&spi2 {
+	status = "disabled";
+};
+
+&ospi {
+	status = "okay";
+};
+
+&ssw0 {
+	uart0 {
+		/delete-property/ output-low;
+		output-high;
+	};
+	spi2d2-d3 {
+		/delete-property/ output-low;
+		output-high;
+	};
+	spi2flash-cs {
+		/delete-property/ output-low;
+		output-high;
+	};
+};
+
+&ssw1 {
+	ftdi {
+		/delete-property/ output-low;
+		output-high;
+	};
+	octal {
+		/delete-property/ output-low;
+		output-high;
+	};
+};
