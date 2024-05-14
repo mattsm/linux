@@ -387,7 +387,8 @@ struct flash_info {
 					 * protection bits. Usually these will
 					 * power-up in a write-protected state.
 					 */
-
+#define SPI_NOR_OPI_READ	BIT(23) /* Flash supports octal Read. */
+#define SPI_NOR_OPI_PP		BIT(24) /* Flash supports Octal Page Program */
 	const struct spi_nor_otp_organization otp_org;
 
 	/* Part specific fixup hooks. */

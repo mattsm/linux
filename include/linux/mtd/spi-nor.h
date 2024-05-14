@@ -34,6 +34,7 @@
 #define SPINOR_OP_READ_1_4_4	0xeb	/* Read data bytes (Quad I/O SPI) */
 #define SPINOR_OP_READ_1_1_8	0x8b	/* Read data bytes (Octal Output SPI) */
 #define SPINOR_OP_READ_1_8_8	0xcb	/* Read data bytes (Octal I/O SPI) */
+#define SPINOR_OP_READ_8_8_8	0xec	/* Read data bytes (Octal SPI) */
 #define SPINOR_OP_PP		0x02	/* Page program (up to 256 bytes) */
 #define SPINOR_OP_PP_1_1_4	0x32	/* Quad page program */
 #define SPINOR_OP_PP_1_4_4	0x38	/* Quad page program */
@@ -196,6 +197,11 @@ enum spi_nor_protocol {
 	SNOR_PROTO_8_8_8_DTR = SNOR_PROTO_DTR(8, 8, 8),
 };
 
+static inline bool spi_nor_protocol_is_octal(enum spi_nor_protocol proto)
+{
+	return !!(proto & SNOR_PROTO_8_8_8);
+}
+
 static inline bool spi_nor_protocol_is_dtr(enum spi_nor_protocol proto)
 {
 	return !!(proto & SNOR_PROTO_IS_DTR);
@@ -289,9 +295,7 @@ struct spi_nor_hwcaps {
 
 #define SNOR_HWCAPS_X_X_X	(SNOR_HWCAPS_READ_2_2_2 |	\
 				 SNOR_HWCAPS_READ_4_4_4 |	\
-				 SNOR_HWCAPS_READ_8_8_8 |	\
-				 SNOR_HWCAPS_PP_4_4_4 |		\
-				 SNOR_HWCAPS_PP_8_8_8)
+				 SNOR_HWCAPS_PP_4_4_4)
 
 #define SNOR_HWCAPS_X_X_X_DTR	(SNOR_HWCAPS_READ_8_8_8_DTR |	\
 				 SNOR_HWCAPS_PP_8_8_8_DTR)

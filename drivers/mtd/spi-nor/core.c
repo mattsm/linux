@@ -94,6 +94,12 @@ void spi_nor_spimem_setup_op(const struct spi_nor *nor,
 	if (op->data.nbytes)
 		op->data.buswidth = spi_nor_get_protocol_data_nbits(proto);
 
+	if (spi_nor_protocol_is_octal(proto)) {
+		ext = spi_nor_get_cmd_ext(nor, op);
+		op->cmd.opcode = (op->cmd.opcode << 8) | ext;
+		op->cmd.nbytes = 2;
+	}
+
 	if (spi_nor_protocol_is_dtr(proto)) {
 		/*
 		 * SPIMEM supports mixed DTR modes, but right now we can only
@@ -387,6 +393,11 @@ int spi_nor_read_sr(struct spi_nor *nor, u8 *sr)
 				   SPI_MEM_OP_NO_ADDR,
 				   SPI_MEM_OP_NO_DUMMY,
 				   SPI_MEM_OP_DATA_IN(1, sr, 0));
+
+		if (nor->reg_proto == SNOR_PROTO_8_8_8) {
+			op.addr.nbytes = nor->params->rdsr_addr_nbytes;
+			op.dummy.nbytes = nor->params->rdsr_dummy;
+		}
 
 		if (nor->reg_proto == SNOR_PROTO_8_8_8_DTR) {
 			op.addr.nbytes = nor->params->rdsr_addr_nbytes;
@@ -2617,6 +2628,13 @@ static void spi_nor_info_init_params(struct spi_nor *nor)
 					  SNOR_PROTO_8_8_8);
 	}
 
+	if (info->flags & SPI_NOR_OPI_READ) {
+		params->hwcaps.mask |= SNOR_HWCAPS_READ_8_8_8;
+		spi_nor_set_read_settings(&params->reads[SNOR_CMD_READ_8_8_8],
+					  0, 8, SPINOR_OP_READ_8_8_8,
+					  SNOR_PROTO_8_8_8);
+	}
+
 	if (info->flags & SPI_NOR_OCTAL_DTR_READ) {
 		params->hwcaps.mask |= SNOR_HWCAPS_READ_8_8_8_DTR;
 		spi_nor_set_read_settings(&params->reads[SNOR_CMD_READ_8_8_8_DTR],
@@ -2630,6 +2648,12 @@ static void spi_nor_info_init_params(struct spi_nor *nor)
 				SPINOR_OP_PP, SNOR_PROTO_1_1_1);
 
 	if (info->flags & SPI_NOR_OCTAL_PP_8_8_8) {
+		params->hwcaps.mask |= SNOR_HWCAPS_PP_8_8_8;
+		spi_nor_set_pp_settings(&params->page_programs[SNOR_CMD_PP_8_8_8],
+					SPINOR_OP_PP, SNOR_PROTO_8_8_8);
+	}
+
+	if (info->flags & SPI_NOR_OPI_PP) {
 		params->hwcaps.mask |= SNOR_HWCAPS_PP_8_8_8;
 		spi_nor_set_pp_settings(&params->page_programs[SNOR_CMD_PP_8_8_8],
 					SPINOR_OP_PP, SNOR_PROTO_8_8_8);
@@ -2754,7 +2778,7 @@ static int spi_nor_init_params(struct spi_nor *nor)
 
 	if ((nor->info->flags & (SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ |
 				 SPI_NOR_OCTAL_READ | SPI_NOR_OCTAL_DTR_READ |
-				 SPI_NOR_OCTAL_READ_1_8_8)) &&
+				 SPI_NOR_OCTAL_READ_1_8_8 | SPI_NOR_OCTAL_DTR_READ)) &&
 	    !(nor->info->flags & SPI_NOR_SKIP_SFDP))
 		spi_nor_sfdp_init_params(nor);
 
@@ -2828,7 +2852,6 @@ static int spi_nor_octal_str_enable(struct spi_nor *nor, bool enable)
 
 	return 0;
 }
-
 
 /**
  * spi_nor_quad_enable() - enable Quad I/O if needed.
