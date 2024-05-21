@@ -7,6 +7,8 @@
 #ifndef __LINUX_MTD_SPI_NOR_INTERNAL_H
 #define __LINUX_MTD_SPI_NOR_INTERNAL_H
 
+#define DEBUG 1
+
 #include "sfdp.h"
 
 #define SPI_NOR_MAX_ID_LEN	6
