@@ -173,72 +173,72 @@ static const struct flash_info macronix_parts[] = {
 			      SECT_4K | SPI_NOR_DUAL_READ |
 			      SPI_NOR_QUAD_READ | SPI_NOR_4B_OPCODES) },
 	{ "mx66lm1g45g", INFO(0xc2853b, 0, 32 * 1024, 4096,
-			      SECT_4K | SPI_NOR_PARSE_SFDP |
+			      SECT_4K | 
 			      SPI_NOR_OCTAL_DTR_READ | SPI_NOR_OCTAL_DTR_PP |
 			      SPI_NOR_4B_OPCODES)
 		.fixups = &octaflash_fixups },
 	{ "mx25lm25645g", INFO(0xc28539, 0, 8 * 1024, 4096,
-			      SECT_4K | SPI_NOR_PARSE_SFDP |
+			      SECT_4K | 
 			      SPI_NOR_OCTAL_DTR_READ | SPI_NOR_OCTAL_DTR_PP |
 			      SPI_NOR_4B_OPCODES)
 		.fixups = &octaflash_fixups },
 	{ "mx66uw2g345g", INFO(0xc2843c, 0, 64 * 1024, 4096,
-			       SECT_4K | SPI_NOR_PARSE_SFDP |
+			       SECT_4K | 
 			       SPI_NOR_OCTAL_READ | SPI_NOR_OCTAL_DTR_READ |
 			       SPI_NOR_OCTAL_DTR_PP | SPI_NOR_4B_OPCODES)
 		.fixups = &octaflash_fixups },
 	{ "mx66uw2g345gx0", INFO(0xc2943c, 0, 64 * 1024, 4096,
-				 SECT_4K | SPI_NOR_PARSE_SFDP |
+				 SECT_4K | 
 				 SPI_NOR_OCTAL_READ | SPI_NOR_OCTAL_DTR_READ |
 				 SPI_NOR_OCTAL_DTR_PP | SPI_NOR_4B_OPCODES)
 		.fixups = &octaflash_fixups },
 	{ "mx66um1g45g", INFO(0xc2803b, 0, 32 * 1024, 4096,
-			      SECT_4K | SPI_NOR_PARSE_SFDP |
+			      SECT_4K | 
 			      SPI_NOR_OCTAL_DTR_READ | SPI_NOR_OCTAL_DTR_PP |
 			      SPI_NOR_4B_OPCODES)
 		.fixups = &octaflash_fixups },
 	{ "mx66uw1g45g", INFO(0xc2813b, 0, 32 * 1024, 4096,
-			      SECT_4K | SPI_NOR_PARSE_SFDP |
+			      SECT_4K | 
 			      SPI_NOR_OCTAL_DTR_READ | SPI_NOR_OCTAL_DTR_PP |
 			      SPI_NOR_4B_OPCODES)
 		.fixups = &octaflash_fixups },
 	{ "mx25uw51245g", INFO(0xc2813a, 0, 16 * 1024, 4096,
-			       SECT_4K | SPI_NOR_PARSE_SFDP |
+			       SECT_4K | 
 			       SPI_NOR_OCTAL_DTR_READ | SPI_NOR_OCTAL_DTR_PP |
 			       SPI_NOR_4B_OPCODES)
 		.fixups = &octaflash_fixups },
 	{ "mx25uw51345g", INFO(0xc2843a, 0, 16 * 1024, 4096,
-			       SECT_4K | SPI_NOR_PARSE_SFDP |
+			       SECT_4K | 
 			       SPI_NOR_OCTAL_DTR_READ | SPI_NOR_OCTAL_DTR_PP |
 			       SPI_NOR_4B_OPCODES)
 		.fixups = &octaflash_fixups },
 	{ "mx25um25645g", INFO(0xc28039, 0, 8 * 1024, 4096,
-			       SECT_4K | SPI_NOR_PARSE_SFDP |
+			       SECT_4K | 
 			       SPI_NOR_OCTAL_DTR_READ | SPI_NOR_OCTAL_DTR_PP |
 			       SPI_NOR_4B_OPCODES)
 		.fixups = &octaflash_fixups },
 	{ "mx25uw25645g", INFO(0xc28139, 0, 8 * 1024, 4096,
-			       SECT_4K | SPI_NOR_PARSE_SFDP |
+			       SECT_4K | 
 			       SPI_NOR_OCTAL_DTR_READ | SPI_NOR_OCTAL_DTR_PP |
 			       SPI_NOR_4B_OPCODES)
 		.fixups = &octaflash_fixups },
 	{ "mx25um25345g", INFO(0xc28339, 0, 8 * 1024, 4096,
-			       SECT_4K | SPI_NOR_PARSE_SFDP |
+			       SECT_4K | 
 			       SPI_NOR_OCTAL_DTR_READ | SPI_NOR_OCTAL_DTR_PP |
 			       SPI_NOR_4B_OPCODES)
 		.fixups = &octaflash_fixups },
 	{ "mx25uw25345g", INFO(0xc28439, 0, 8 * 1024, 4096,
-			       SECT_4K | SPI_NOR_PARSE_SFDP |
+			       SECT_4K | 
 			       SPI_NOR_OCTAL_DTR_READ | SPI_NOR_OCTAL_DTR_PP |
 			       SPI_NOR_4B_OPCODES)
 		.fixups = &octaflash_fixups },
 	{ "mx25uw6445g", INFO(0xc28137, 0, 2 * 1024, 4096,
-			      SECT_4K | SPI_NOR_PARSE_SFDP |
+			      SECT_4K | 
 			      SPI_NOR_OCTAL_DTR_READ | SPI_NOR_OCTAL_DTR_PP |
 			      SPI_NOR_4B_OPCODES)
 		.fixups = &octaflash_fixups },
 	{ "mx25uw6345g", INFO(0xc28437, 0, 2 * 1024, 4096,
-			      SECT_4K | SPI_NOR_PARSE_SFDP |
+			      SECT_4K | 
 			      SPI_NOR_OCTAL_DTR_READ | SPI_NOR_OCTAL_DTR_PP |
 			      SPI_NOR_4B_OPCODES)
 		.fixups = &octaflash_fixups },
