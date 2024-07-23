@@ -213,6 +213,7 @@
 		spi-cpol;
 		spi-max-frequency = <25000000>;
 		spi-rx-bus-width = <4>;
+		adi,enable-dma;
 
 		qspi_0: partition@0 {
 			label = "U-Boot SPL";
