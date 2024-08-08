@@ -53,6 +53,7 @@
 #define SPI_CTL_MIO_DUAL            0x00100000    /* MIOM: Enable DIOM (Dual I/O Mode) */
 #define SPI_CTL_MIO_QUAD            0x00200000    /* MIOM: Enable QUAD (Quad SPI Mode) */
 #define SPI_CTL_SOSI                0x00400000    /* Start on MOSI */
+#define SPI_CTL_MMSE                0x80000000	  /* Memory-Mapped SPI Enable */
 /* SPI_RX_CONTROL */
 #define SPI_RXCTL_REN               0x00000001    /* Receive Channel Enable */
 #define SPI_RXCTL_RTI               0x00000004    /* Receive Transfer Initiate */
@@ -120,6 +121,10 @@
 #define SPI_SLVSEL_SSEL5            0x00002000    /* SPISSEL5 Value */
 #define SPI_SLVSEL_SSEL6            0x00004000    /* SPISSEL6 Value */
 #define SPI_SLVSEL_SSEL7            0x00008000    /* SPISSEL7 Value */
+/* SPI_MMRDH */
+#define SPI_MMRDH_FOO               0x05003BEB	  /* Chip specific configuration */
+/* SPI_MMTOP */
+#define SPI_MMTOP_VALUE             0x7FFFFFFF
 /* SPI_RWC */
 #define SPI_RWC_VALUE               0x0000FFFF    /* Received Word-Count */
 /* SPI_RWCR */
@@ -256,6 +261,11 @@ struct adi_spi_master {
 
 	/* Regs base of SPI controller */
 	struct adi_spi_regs __iomem *regs;
+
+	/* Memory mapped mode */
+	void __iomem		*mmap_base;
+	resource_size_t		mmap_size;
+	dma_addr_t 		mmap_base_phys;
 
 	/* Current message transfer state info */
 	struct spi_transfer *cur_transfer;
@@ -726,7 +736,7 @@ static int adi_spi_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	struct spi_master *master;
 	struct adi_spi_master *drv_data;
-	struct resource *mem, *res;
+	struct resource *mem, *mmap, *res;
 	struct clk *sclk;
 	int ret;
 
@@ -772,6 +782,16 @@ static int adi_spi_probe(struct platform_device *pdev)
 		dev_err(dev, "Could not map spiv3 memory, check device tree\n");
 		return PTR_ERR(drv_data->regs);
 	}
+
+	/* Obtain and remap AHB address. */
+	mmap = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+	drv_data->mmap_base = devm_ioremap_resource(dev, mmap);
+	if (IS_ERR(drv_data->mmap_base)) {
+		dev_err(dev, "Cannot remap memory map address.\n");
+		return PTR_ERR(drv_data->mmap_base);
+	}
+	drv_data->mmap_base_phys = (dma_addr_t)mmap->start;
+	drv_data->mmap_size = resource_size(mmap);
 
 	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 	if (!res) {
