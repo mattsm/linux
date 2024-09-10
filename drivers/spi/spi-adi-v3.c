@@ -23,6 +23,7 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/spi/spi.h>
+#include <linux/spi/spi-mem.h>
 #include <linux/types.h>
 
 /* SPI_CONTROL */
@@ -243,6 +244,8 @@ struct adi_spi_regs {
 	u32 rfifo;
 	u32 reserved3;
 	u32 tfifo;
+	u32 mmrdh;
+	u32 mmtop;
 };
 
 struct adi_spi_master;
@@ -266,6 +269,7 @@ struct adi_spi_master {
 	void __iomem		*mmap_base;
 	resource_size_t		mmap_size;
 	dma_addr_t 		mmap_base_phys;
+	bool			use_mmap_mode;
 
 	/* Current message transfer state info */
 	struct spi_transfer *cur_transfer;
@@ -441,6 +445,22 @@ static const struct adi_spi_transfer_ops adi_spi_transfer_ops_u32 = {
 	.write  = adi_spi_u32_write,
 	.read   = adi_spi_u32_read,
 	.duplex = adi_spi_u32_duplex,
+};
+
+static int adi_spi_exec_mem_op(struct spi_mem *mem, const struct spi_mem_op *op)
+{
+	pr_warn("adi_spi_exec_mem_op()\n");
+	int ret;
+
+	ret = -1;
+	if (ret)
+		dev_err(&mem->spi->dev, "operation failed with %d\n", ret);
+
+	return ret;
+}
+
+static const struct spi_controller_mem_ops adi_spi_mem_ops = {
+	.exec_op = adi_spi_exec_mem_op,
 };
 
 static int adi_spi_pio_xfer(struct spi_master *master, struct spi_device *spi,
@@ -761,14 +781,7 @@ static int adi_spi_probe(struct platform_device *pdev)
 	master->dev.of_node = dev->of_node;
 	master->bus_num = -1;
 	master->num_chipselect = 128;
-	master->use_gpio_descriptors = true;
-	master->cleanup = adi_spi_cleanup;
 	master->setup = adi_spi_setup;
-	master->prepare_message = adi_spi_prepare_message;
-	master->unprepare_message = adi_spi_unprepare_message;
-	master->transfer_one = adi_spi_transfer_one;
-	master->can_dma = adi_spi_can_dma;
-	master->bits_per_word_mask = BIT(32 - 1) | BIT(16 - 1) | BIT(8 - 1);
 
 	drv_data = spi_master_get_devdata(master);
 	drv_data->master = master;
@@ -792,6 +805,8 @@ static int adi_spi_probe(struct platform_device *pdev)
 	}
 	drv_data->mmap_base_phys = (dma_addr_t)mmap->start;
 	drv_data->mmap_size = resource_size(mmap);
+
+	master->mem_ops = &adi_spi_mem_ops;
 
 	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 	if (!res) {
